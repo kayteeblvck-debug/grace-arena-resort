@@ -1,0 +1,29 @@
+# --- Java / Gradle ---
+backend/build/
+backend/.gradle/
+backend/out/
+backend/bin/
+*.class
+*.jar
+!backend/gradle/wrapper/gradle-wrapper.jar
+*.log
+
+# --- Node / Vite ---
+node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.vite/
+npm-debug.log*
+yarn-error.log*
+
+# --- Env ---
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# --- Editors / OS ---
+.idea/
+.vscode/
+*.iml
+.DS_Store
