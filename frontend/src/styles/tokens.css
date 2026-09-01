@@ -1,0 +1,83 @@
+/*
+ * Design tokens, taken from the logo: near-black blades, a warm amber gold, and the
+ * white the mark is set on, warmed to ivory so large fields do not glare.
+ *
+ * Two golds on purpose. --gold is the logo colour and is used on dark grounds and as
+ * a graphic element. --gold-deep is the darkened version used for gold *text* on
+ * ivory, where the logo colour would not carry enough contrast to be readable.
+ */
+
+:root {
+  /* brand */
+  --ink: #0b0b0b;
+  --ink-800: #141414;
+  --ink-700: #1f1f1f;
+  --ink-600: #2e2e2e;
+  --ink-400: #6b6b6b;
+
+  --gold: #e5b93c;
+  --gold-bright: #f2ce62;
+  --gold-deep: #96701a;
+  --gold-soft: #f6e9c4;
+
+  --ivory: #fbf8f1;
+  --sand: #f1e9db;
+  --sand-deep: #e4d9c4;
+
+  /* semantic surfaces */
+  --bg: var(--ivory);
+  --surface: #ffffff;
+  --surface-sunken: var(--sand);
+  --surface-dark: var(--ink);
+
+  --text: #171512;
+  --text-muted: #6a6255;
+  --text-on-dark: #f4f0e8;
+  --text-on-dark-muted: rgba(244, 240, 232, 0.68);
+
+  --line: rgba(23, 21, 18, 0.14);
+  --line-strong: rgba(23, 21, 18, 0.28);
+  --line-on-dark: rgba(244, 240, 232, 0.18);
+  --line-gold: rgba(229, 185, 60, 0.42);
+
+  --danger: #9b2c22;
+  --danger-soft: #fbeeec;
+  --success: #1f5c3d;
+  --success-soft: #e9f3ed;
+
+  /* the mark reads dark on light grounds and ivory on dark ones */
+  --logo-blade: var(--ink);
+  --logo-accent: var(--gold);
+
+  /* type */
+  --font-display: 'Cormorant Garamond', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Jost', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+
+  --tracking-eyebrow: 0.3em;
+  --tracking-button: 0.16em;
+
+  /* rhythm — sharp corners throughout; the brand has no soft edges */
+  --radius: 0px;
+  --radius-pill: 999px;
+  --section-y: clamp(4.5rem, 9vw, 8.5rem);
+  --gutter: clamp(1.25rem, 5vw, 4rem);
+  --container: 1280px;
+  --container-narrow: 860px;
+
+  --shadow-soft: 0 20px 60px -30px rgba(11, 11, 11, 0.5);
+  --shadow-lift: 0 30px 70px -35px rgba(11, 11, 11, 0.62);
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Sections that sit on ink flip the logo and the borders. */
+.on-dark {
+  --text: var(--text-on-dark);
+  --text-muted: var(--text-on-dark-muted);
+  --line: var(--line-on-dark);
+  --line-strong: rgba(244, 240, 232, 0.32);
+  --logo-blade: var(--text-on-dark);
+  --surface: var(--ink-800);
+  color: var(--text-on-dark);
+  background: var(--ink);
+}

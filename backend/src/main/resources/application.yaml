@@ -24,14 +24,57 @@ spring:
   jackson:
     default-property-inclusion: non_null
 
+  # SMTP. `spring.mail.host` is deliberately unset here: Spring Boot only builds a
+  # JavaMailSender when it is present, and without one the app falls back to
+  # LoggingEmailService (prints the message to the log). Set the host via the
+  # environment to switch real sending on:
+  #
+  #   SPRING_MAIL_HOST=smtp.zoho.com
+  #   SPRING_MAIL_USERNAME=no-reply@gracearenaresort.com
+  #   SPRING_MAIL_PASSWORD=...
+  #
+  mail:
+    port: ${MAIL_PORT:587}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
+
 server:
   port: 8080
   servlet:
     context-path: /api
 
 app:
+  # Where the React site is served from. Used to build links inside emails.
+  frontend-url: ${APP_FRONTEND_URL:http://localhost:5173}
+
   cors:
-    allowed-origins: http://localhost:5173
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173}
+
+  jwt:
+    # Override in every deployed environment. Must be at least 32 characters.
+    secret: ${APP_JWT_SECRET:dev-only-secret-change-me-before-you-deploy-anything}
+    # Seven days, in milliseconds.
+    expiration-ms: ${APP_JWT_EXPIRATION_MS:604800000}
+
+  mail:
+    from: ${APP_MAIL_FROM:no-reply@gracearenaresort.com}
+    from-name: ${APP_MAIL_FROM_NAME:Grace Arena Resort}
+    # Where guest enquiries and booking notifications are delivered.
+    reservations-inbox: ${APP_MAIL_RESERVATIONS:reservations@gracearenaresort.com}
+    # DEV ONLY. Returns the verification link in the register/resend response so the
+    # flow can be finished without a mail server. Set to false once SMTP is wired up.
+    expose-verification-link: ${APP_EXPOSE_VERIFICATION_LINK:true}
+
+  verification:
+    token-ttl-hours: ${APP_VERIFICATION_TTL_HOURS:24}
 
 logging:
   level:

@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gracearena.resort.common.ApiResponse;
 
+/**
+ * The public catalogue. Whether a room is free on given dates is a different
+ * question — see /v1/availability.
+ */
 @RestController
 @RequestMapping("/v1/rooms")
 public class RoomController {

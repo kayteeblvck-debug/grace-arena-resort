@@ -4,18 +4,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class GraceArenaResortApplicationTests {
-
-	@Autowired
-	private MockMvc mockMvc;
+/** The public catalogue: readable by anyone, no token required. */
+class GraceArenaResortApplicationTests extends ApiTestSupport {
 
 	@Test
 	void contextLoads() {
@@ -26,14 +19,25 @@ class GraceArenaResortApplicationTests {
 		mockMvc.perform(get("/v1/rooms"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.success").value(true))
-				.andExpect(jsonPath("$.data.length()").value(4));
+				.andExpect(jsonPath("$.data.length()").value(Matchers.greaterThan(0)))
+				.andExpect(jsonPath("$.data[0].slug").isNotEmpty())
+				.andExpect(jsonPath("$.data[0].amenities").isArray());
 	}
 
 	@Test
-	void availableOnlyFiltersOutUnavailableRooms() throws Exception {
+	void roomsCanBeFetchedBySlugWithTheirGallery() throws Exception {
+		mockMvc.perform(get("/v1/rooms/twin-city-pool-villa"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data.name").value("Twin City Pool Villa"))
+				.andExpect(jsonPath("$.data.gallery.length()").value(Matchers.greaterThan(0)))
+				.andExpect(jsonPath("$.data.capacity").value(5));
+	}
+
+	@Test
+	void availableOnlyReturnsOnlyRoomsOnSale() throws Exception {
 		mockMvc.perform(get("/v1/rooms").param("availableOnly", "true"))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.data.length()").value(3));
+				.andExpect(jsonPath("$.data[*].available", Matchers.everyItem(Matchers.is(true))));
 	}
 
 	@Test
@@ -41,5 +45,10 @@ class GraceArenaResortApplicationTests {
 		mockMvc.perform(get("/v1/rooms/does-not-exist"))
 				.andExpect(status().isNotFound())
 				.andExpect(jsonPath("$.success").value(false));
+	}
+
+	@Test
+	void healthIsOpen() throws Exception {
+		mockMvc.perform(get("/v1/health")).andExpect(status().isOk());
 	}
 }

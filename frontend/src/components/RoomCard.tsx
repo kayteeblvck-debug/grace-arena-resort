@@ -1,32 +1,52 @@
 import { Link } from 'react-router-dom'
 import type { Room } from '../api/types'
-import { formatCurrency } from '../lib/format'
+import { formatCurrency, pluralise } from '../lib/format'
+import ResortImage from './ResortImage'
 
 export default function RoomCard({ room }: { room: Room }) {
+  const href = `/accommodation/${room.slug}`
+
   return (
     <article className="room-card">
-      <img src={room.imageUrl} alt={room.name} loading="lazy" />
+      <Link to={href} className="media ratio-4-3" aria-label={`View ${room.name}`}>
+        <ResortImage src={room.imageUrl} alt={room.name} />
+        {room.featured && <span className="badge gold media-badge">Most requested</span>}
+      </Link>
+
       <div className="room-card-body">
-        <div className="room-card-head">
-          <h3>{room.name}</h3>
-          <span className={room.available ? 'badge available' : 'badge unavailable'}>
-            {room.available ? 'Available' : 'Fully booked'}
-          </span>
-        </div>
-        <p className="muted">{room.description}</p>
+        <h3>
+          <Link to={href}>{room.name}</Link>
+        </h3>
+
+        <p className="tagline">{room.tagline ?? room.description}</p>
+
         <dl className="room-meta">
           <div>
-            <dt>Per night</dt>
-            <dd>{formatCurrency(room.pricePerNight)}</dd>
-          </div>
-          <div>
             <dt>Sleeps</dt>
-            <dd>{room.capacity} guests</dd>
+            <dd>{pluralise(room.capacity, 'guest')}</dd>
           </div>
+          {room.sizeSqm && (
+            <div>
+              <dt>Size</dt>
+              <dd>{room.sizeSqm} m²</dd>
+            </div>
+          )}
+          {room.bedType && (
+            <div>
+              <dt>Beds</dt>
+              <dd>{room.bedType}</dd>
+            </div>
+          )}
         </dl>
-        <Link className="button ghost" to={`/rooms/${room.slug}`}>
-          View details
-        </Link>
+
+        <div className="room-card-foot">
+          <p className="price tabular">
+            {formatCurrency(room.pricePerNight)} <small>/ night</small>
+          </p>
+          <Link className="link-underline" to={href}>
+            View suite
+          </Link>
+        </div>
       </div>
     </article>
   )

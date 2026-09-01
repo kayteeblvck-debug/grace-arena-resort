@@ -18,18 +18,36 @@ public class RoomService {
 	}
 
 	public List<RoomResponse> listRooms(boolean availableOnly) {
-		List<Room> rooms = availableOnly ? roomRepository.findByAvailableTrue() : roomRepository.findAll();
-		return rooms.stream().map(RoomResponse::from).toList();
+		return rooms(availableOnly).stream().map(RoomResponse::from).toList();
+	}
+
+	public List<Room> rooms(boolean availableOnly) {
+		return availableOnly
+				? roomRepository.findByAvailableTrueOrderBySortOrderAscPricePerNightAsc()
+				: roomRepository.findAllByOrderBySortOrderAscPricePerNightAsc();
 	}
 
 	public RoomResponse getBySlug(String slug) {
+		return RoomResponse.from(requireBySlug(slug));
+	}
+
+	public Room requireBySlug(String slug) {
 		return roomRepository.findBySlug(slug)
-				.map(RoomResponse::from)
 				.orElseThrow(() -> new ResourceNotFoundException("No room found with slug '" + slug + "'"));
 	}
 
 	public Room requireById(Long id) {
 		return roomRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("No room found with id " + id));
+	}
+
+	/**
+	 * Loads a room with its row locked for the rest of the transaction. Call this
+	 * before counting overlapping bookings so the count cannot go stale underneath.
+	 */
+	public Room requireByIdForBooking(Long id) {
+		roomRepository.lockForBooking(id)
+				.orElseThrow(() -> new ResourceNotFoundException("No room found with id " + id));
+		return requireById(id);
 	}
 }
